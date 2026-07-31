@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#161826">
+<link rel="apple-touch-icon" href="icon-192.png">
+<script src="./support.js"></script>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('service-worker.js').catch(() => {})); }</script>
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#161826"/><circle cx="100" cy="88" r="40" fill="none" stroke="#9184d9" stroke-width="6"/><text x="100" y="96" font-family="Inter,sans-serif" font-size="30" fill="#9184d9" text-anchor="middle">6</text><text x="100" y="160" font-family="Inter,sans-serif" font-size="22" fill="#e9e9ed" text-anchor="middle">SixSplit</text></svg>
+</template>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+  body{margin:0}
+  @keyframes ss-fade{from{opacity:0}to{opacity:1}}
+  @keyframes ss-pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:radial-gradient(circle at 30% 20%,#1b1e30,#0f1119 70%);display:flex;align-items:center;justify-content:center;padding:48px 24px;font-family:'Inter',system-ui,sans-serif;box-sizing:border-box;">
+
+  <div style="display:flex;flex-direction:column;align-items:center;gap:18px;">
+    <div style="color:#e9e9ed;font-weight:600;font-size:14px;letter-spacing:0.02em;opacity:0.55;">SixSplit — room expense tracker</div>
+
+    <div style="position:relative;width:412px;height:892px;">
+      <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" dark="{{true}}" width="{{412}}" height="{{892}}" hint-size="412,892">
+        <div style="height:100%;display:flex;flex-direction:column;background:#161826;color:#e9e9ed;">
+
+          <sc-if value="{{!loggedIn}}" hint-placeholder-val="{{true}}">
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:32px 28px;gap:20px;overflow:auto;">
+            <div>
+              <div style="font-family:'Inter',sans-serif;font-weight:500;font-size:28px;letter-spacing:-0.02em;">SixSplit</div>
+              <div style="font-size:13px;color:#b2b6ca;margin-top:4px;">Sign in, or create your account</div>
+            </div>
+
+            <div style="display:inline-flex;overflow:hidden;border:1px solid rgba(233,233,237,0.16);border-radius:8px;align-self:flex-start;">
+              <button onClick="{{goSignin}}" style="padding:7px 14px;font-size:13px;cursor:pointer;background:transparent;border:none;color:{{signinTabColor}};box-shadow:{{signinTabShadow}};">Sign in</button>
+              <button onClick="{{goSignup}}" style="padding:7px 14px;font-size:13px;cursor:pointer;background:transparent;border:none;border-left:1px solid rgba(233,233,237,0.16);color:{{signupTabColor}};box-shadow:{{signupTabShadow}};">Create account</button>
+            </div>
+
+            <sc-if value="{{isSignin}}" hint-placeholder-val="{{true}}">
+            <form onSubmit="{{onLoginSubmit}}" style="display:flex;flex-direction:column;gap:14px;">
+              <div>
+                <label style="display:block;font-size:12px;margin-bottom:5px;color:#b2b6ca;">Username</label>
+                <input class="input" style="width:100%;min-height:40px;padding:8px 12px;font-size:15px;color:#e9e9ed;background:#232532;border:1px solid rgba(233,233,237,0.16);border-radius:8px;box-sizing:border-box;" placeholder="your username" value="{{loginUsername}}" onChange="{{onUsernameChange}}"></input>
+              </div>
+              <div>
+                <label style="display:block;font-size:12px;margin-bottom:5px;color:#b2b6ca;">Password</label>
+                <input type="password" style="width:100%;min-height:40px;padding:8px 12px;font-size:15px;color:#e9e9ed;background:#232532;border:1px solid rgba(233,233,237,0.16);border-radius:8px;box-sizing:border-box;" placeholder="••••••••" value="{{loginPassword}}" onChange="{{onPasswordChange}}"></input>
+              </div>
+
+              <sc-if value="{{loginError}}" hint-placeholder-val="{{false}}">
+                <div style="font-size:12.5px;color:#d2cefd;background:#2b2741;border-radius:8px;padding:8px 10px;">{{loginError}}</div>
+              </sc-if>
+
+              <button type="submit" style="width:100%;margin-top:2px;min-height:42px;border-radius:8px;border:1px solid #9184d9;background:transparent;color:#9184d9;font-family:'Inter',sans-serif;font-weight:500;font-size:15px;cursor:pointer;">Sign in</button>
+            </form>
+            </sc-if>
+
+            <sc-if value="{{isSignup}}" hint-placeholder-val="{{false}}">
+              <sc-if value="{{signupIsNew}}" hint-placeholder-val="{{false}}">
+                <form onSubmit="{{onNewMemberSubmit}}" style="display:flex;flex-direction:column;gap:14px;">
+                  <div style="font-size:13.5px;">New roommate · <button type="button" onClick="{{backToClaimList}}" style="background:none;border:none;color:#b2b6ca;font-size:12px;cursor:pointer;text-decoration:underline;">back</button></div>
+                  <div>
+                    <label style="display:block;font-size:12px;margin-bottom:5px;color:#b2b6ca;">Full name</label>
+                    <input style="width:100%;min-height:40px;padding:8px 12px;font-size:15px;color:#e9e9ed;background:#232532;border:1px solid rgba(233,233,237,0.16);border-radius:8px;box-sizing:border-box;" value="{{signupNewName}}" onChange="{{onNewNameChange}}"></input>
+                  </div>
+                  <div>
+                    <label style="display:block;font-size:12px;margin-bottom:5px;color:#b2b6ca;">Choose a username</label>
+                    <input style="width:100%;min-height:40px;padding:8px 12px;font-size:15px;color:#e9e9ed;background:#232532;border:1px solid rgba(233,233,237,0.16);border-radius:8px;box-sizing:border-box;" value="{{signupUsername}}" onChange="{{onSignupUsernameChange}}"></input>
+                  </div>
+                  <div>
+                    <label style="display:block;font-size:12px;margin-bottom:5px;color:#b2b6ca;">Choose a password</label>
+                    <input type="password" style="width:100%;min-height:40px;padding:8px 12px;font-size:15px;color:#e9e9ed;background:#232532;border:1px solid rgba(233,233,237,0.16);border-radius:8px;box-sizing:border-box;" value="{{signupPassword}}" onChange="{{onSignupPasswordChange}}"></input>
+                  </div>
+                  <div>
+                    <label style="display:block;font-size:12px;margin-bottom:5px;color:#b2b6ca;">Confirm password</label>
+                    <input type="password" style="width:100%;min-height:40px;padding:8px 12px;font-size:15px;color:#e9e9ed;background:#232532;border:1px solid rgba(233,233,237,0.16);border-radius:8px;box-sizing:border-box;" value="{{signupPassword2}}" onChange="{{onSignupPassword2Change}}"></input>
+                  </div>
+                  <sc-if value="{{signupError}}" hint-placeholder-val="{{false}}">
+                    <div style="font-size:12.5px;color:#d2cefd;background:#2b2741;border-radius:8px;padding:8px 10px;">{{signupError}}</div>
+                  </sc-if>
+                  <button type="submit" style="width:100%;margin-top:2px;min-height:42px;border-radius:8px;border:1px solid #9184d9;background:transparent;color:#9184d9;font-family:'Inter',sans-serif;font-weight:500;font-size:15px;cursor:pointer;">Join room &amp; sign in</button>
+                </form>
+              </sc-if>
+
+              <sc-if value="{{!signupIsNew}}" hint-placeholder-val="{{true}}">
+              <sc-if value="{{!signupMemberId}}" hint-placeholder-val="{{true}}">
+                <div>
+                  <div style="font-size:12px;color:#b2b6ca;margin-bottom:10px;">Which room member are you?</div>
+                  <div style="display:flex;flex-direction:column;gap:8px;">
+                    <sc-for list="{{unclaimedMembers}}" as="m" hint-placeholder-count="6">
+                      <button onClick="{{m.pick}}" style="text-align:left;padding:10px 14px;border-radius:8px;border:1px solid rgba(233,233,237,0.16);background:transparent;color:#e9e9ed;font-size:14px;cursor:pointer;">{{m.name}}</button>
+                    </sc-for>
+                  </div>
+                  <sc-if value="{{allClaimed}}" hint-placeholder-val="{{false}}">
+                    <div style="font-size:12.5px;color:#b2b6ca;margin-top:4px;">Every existing account is already set up.</div>
+                  </sc-if>
+                  <button type="button" onClick="{{goNewMember}}" style="margin-top:12px;width:100%;min-height:38px;border-radius:8px;border:1px dashed rgba(233,233,237,0.3);background:transparent;color:#b2b6ca;font-size:13px;cursor:pointer;">+ New roommate — create a fresh account</button>
+                </div>
+              </sc-if>
+              <sc-if value="{{signupMemberId}}" hint-placeholder-val="{{false}}">
+                <form onSubmit="{{onSignupSubmit}}" style="display:flex;flex-direction:column;gap:14px;">
+                  <div style="font-size:13.5px;">Creating account for <span style="font-weight:500;color:#9184d9;">{{signupMemberName}}</span> · <button type="button" onClick="{{clearSignupMember}}" style="background:none;border:none;color:#b2b6ca;font-size:12px;cursor:pointer;text-decoration:underline;">change</button></div>
+                  <div>
+                    <label style="display:block;font-size:12px;margin-bottom:5px;color:#b2b6ca;">Choose a username</label>
+                    <input style="width:100%;min-height:40px;padding:8px 12px;font-size:15px;color:#e9e9ed;background:#232532;border:1px solid rgba(233,233,237,0.16);border-radius:8px;box-sizing:border-box;" value="{{signupUsername}}" onChange="{{onSignupUsernameChange}}"></input>
+                  </div>
+                  <div>
+                    <label style="display:block;font-size:12px;margin-bottom:5px;color:#b2b6ca;">Choose a password</label>
+                    <input type="password" style="width:100%;min-height:40px;padding:8px 12px;font-size:15px;color:#e9e9ed;background:#232532;border:1px solid rgba(233,233,237,0.16);border-radius:8px;box-sizing:border-box;" value="{{signupPassword}}" onChange="{{onSignupPasswordChange}}"></input>
+                  </div>
+                  <div>
+                    <label style="display:block;font-size:12px;margin-bottom:5px;color:#b2b6ca;">Confirm password</label>
+                    <input type="password" style="width:100%;min-height:40px;padding:8px 12px;font-size:15px;color:#e9e9ed;background:#232532;border:1px solid rgba(233,233,237,0.16);border-radius:8px;box-sizing:border-box;" value="{{signupPassword2}}" onChange="{{onSignupPassword2Change}}"></input>
+                  </div>
+                  <sc-if value="{{signupError}}" hint-placeholder-val="{{false}}">
+                    <div style="font-size:12.5px;color:#d2cefd;background:#2b2741;border-radius:8px;padding:8px 10px;">{{signupError}}</div>
+                  </sc-if>
+                  <button type="submit" style="width:100%;margin-top:2px;min-height:42px;border-radius:8px;border:1px solid #9184d9;background:transparent;color:#9184d9;font-family:'Inter',sans-serif;font-weight:500;font-size:15px;cursor:pointer;">Create account &amp; sign in</button>
+                </form>
+              </sc-if>
+              </sc-if>
+            </sc-if>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{loggedIn}}" hint-placeholder-val="{{false}}">
+          <div style="flex:1;display:flex;flex-direction:column;min-height:0;">
+
+            <sc-if value="{{viewingMember}}" hint-placeholder-val="{{false}}">
+            <div style="display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid rgba(233,233,237,0.08);">
+              <button onClick="{{backFromMember}}" style="width:32px;height:32px;border-radius:8px;border:none;background:transparent;color:#e9e9ed;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+              </button>
+              <div style="flex:1;">
+                <div style="font-weight:500;font-size:16px;">{{viewingMember.name}}</div>
+                <div style="font-size:11px;color:#75798c;">View only</div>
+              </div>
+            </div>
+
+            <div style="flex:1;overflow:auto;padding:18px;">
+              <div style="font-size:12.5px;color:#75798c;margin-bottom:14px;">{{currentMonthLabel}}</div>
+
+              <div style="background:#232532;border-radius:8px;padding:16px;margin-bottom:16px;">
+                <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#9184d9;margin-bottom:4px;">Total spent</div>
+                <div style="font-size:26px;font-weight:500;">{{memberViewTotal}}</div>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:1px;">
+                <sc-for list="{{memberViewRows}}" as="row" hint-placeholder-count="3">
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 4px;background:linear-gradient(to right,transparent,rgba(233,233,237,0.08) 24px,rgba(233,233,237,0.08) calc(100% - 24px),transparent) no-repeat bottom / 100% 1px;">
+                    <div>
+                      <div style="font-size:14.5px;">{{row.item}}</div>
+                      <div style="font-size:11.5px;color:#75798c;margin-top:2px;">{{row.date}}</div>
+                    </div>
+                    <div style="font-size:14.5px;font-weight:500;">{{row.price}}</div>
+                  </div>
+                </sc-for>
+                <sc-if value="{{memberViewEmpty}}" hint-placeholder-val="{{false}}">
+                  <div style="font-size:13px;color:#75798c;padding:20px 4px;text-align:center;">No expenses recorded this month.</div>
+                </sc-if>
+              </div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{!viewingMember}}" hint-placeholder-val="{{true}}">
+            <div style="display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid rgba(233,233,237,0.08);">
+              <div style="flex:1;">
+                <div style="font-weight:500;font-size:17px;letter-spacing:-0.01em;">SixSplit</div>
+                <div style="font-size:11.5px;color:#75798c;">{{currentUser.name}}<sc-if value="{{isAdmin}}" hint-placeholder-val="{{false}}"> · Admin</sc-if></div>
+              </div>
+              <button onClick="{{openDevPanel}}" style="font-size:11px;color:#75798c;background:transparent;border:none;cursor:pointer;margin-right:6px;">Dev</button>
+              <button onClick="{{logout}}" style="width:34px;height:34px;border-radius:8px;border:1px solid rgba(233,233,237,0.16);background:transparent;color:#e9e9ed;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path><path d="M16 17l5-5-5-5"></path><path d="M21 12H9"></path></svg>
+              </button>
+            </div>
+
+            <div style="flex:1;overflow:auto;">
+
+              <sc-if value="{{isDashboard}}" hint-placeholder-val="{{true}}">
+              <div style="padding:18px;">
+                <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#75798c;margin-bottom:2px;">This month</div>
+                <div style="font-size:19px;font-weight:500;margin-bottom:4px;">{{currentMonthLabel}}</div>
+                <div style="font-size:12px;color:#75798c;margin-bottom:16px;">Auto-closes {{closesOnLabel}}</div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+                  <sc-for list="{{memberCards}}" as="card" hint-placeholder-count="6">
+                    <div onClick="{{card.open}}" style="background:#232532;border-radius:8px;padding:14px;cursor:pointer;box-shadow:0 0 0 1px rgba(233,233,237,0.06);">
+                      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                        <div style="width:30px;height:30px;border-radius:50%;background:#423a6a;color:#f5f4ff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex:none;">{{card.initial}}</div>
+                        <div style="font-size:13.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{card.name}}</div>
+                      </div>
+                      <div style="font-size:17px;font-weight:500;">{{card.total}}</div>
+                    </div>
+                  </sc-for>
+                </div>
+
+                <div style="background:#232532;border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:10px;">
+                  <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:#b2b6ca;">Room total</span><span style="font-weight:500;">{{dashboardGrand}}</span></div>
+                  <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:#b2b6ca;">Your fair share</span><span style="font-weight:500;">{{dashboardShare}}</span></div>
+                  <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:#b2b6ca;">Your balance</span><span style="font-weight:500;color:{{dashboardBalanceColor}};">{{dashboardBalanceText}}</span></div>
+                  <button onClick="{{goSummary}}" style="margin-top:4px;width:100%;min-height:38px;border-radius:8px;border:1px solid #9184d9;background:transparent;color:#9184d9;font-family:'Inter',sans-serif;font-weight:500;font-size:13.5px;cursor:pointer;">View full summary</button>
+                </div>
+              </div>
+              </sc-if>
+
+              <sc-if value="{{isMyExpenses}}" hint-placeholder-val="{{false}}">
+              <div style="padding:18px;">
+                <div style="font-size:12.5px;color:#75798c;margin-bottom:14px;">{{currentMonthLabel}} · resets on the 1st</div>
+
+                <div style="background:#232532;border-radius:8px;padding:16px;margin-bottom:14px;">
+                  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#9184d9;margin-bottom:4px;">Your total</div>
+                  <div style="font-size:26px;font-weight:500;">{{myTotal}}</div>
+                </div>
+
+                <sc-if value="{{canEditMonth}}" hint-placeholder-val="{{true}}">
+                <button onClick="{{openAdd}}" style="width:100%;min-height:40px;margin-bottom:14px;border-radius:8px;border:1px solid #9184d9;background:transparent;color:#9184d9;font-family:'Inter',sans-serif;font-weight:500;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+                  Add expense
+                </button>
+                </sc-if>
+
+                <div style="display:flex;flex-direction:column;gap:1px;">
+                  <sc-for list="{{myExpenseRows}}" as="row" hint-placeholder-count="3">
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 4px;gap:8px;background:linear-gradient(to right,transparent,rgba(233,233,237,0.08) 24px,rgba(233,233,237,0.08) calc(100% - 24px),transparent) no-repeat bottom / 100% 1px;">
+                      <div style="min-width:0;">
+                        <div style="font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{row.item}}</div>
+                        <div style="font-size:11.5px;color:#75798c;margin-top:2px;">{{row.date}}</div>
+                      </div>
+                      <div style="display:flex;align-items:center;gap:8px;flex:none;">
+                        <div style="font-size:14.5px;font-weight:500;">{{row.price}}</div>
+                        <sc-if value="{{canEditMonth}}" hint-placeholder-val="{{true}}">
+                          <button onClick="{{row.edit}}" style="width:28px;height:28px;border-radius:6px;border:none;background:transparent;color:#b2b6ca;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg>
+                          </button>
+                          <button onClick="{{row.del}}" style="width:28px;height:28px;border-radius:6px;border:none;background:transparent;color:#b2b6ca;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 14H6L5 6"></path></svg>
+                          </button>
+                        </sc-if>
+                      </div>
+                    </div>
+                  </sc-for>
+                  <sc-if value="{{myExpensesEmpty}}" hint-placeholder-val="{{false}}">
+                    <div style="font-size:13px;color:#75798c;padding:20px 4px;text-align:center;">No expenses yet — add your first one above.</div>
+                  </sc-if>
+                </div>
+              </div>
+              </sc-if>
+
+              <sc-if value="{{isSummary}}" hint-placeholder-val="{{false}}">
+              <div style="padding:18px;">
+                <div style="font-size:12.5px;color:#75798c;margin-bottom:16px;">{{currentMonthLabel}}</div>
+
+                <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#75798c;margin-bottom:8px;">Personal expenses</div>
+                <div style="background:#232532;border-radius:8px;padding:6px 12px;margin-bottom:16px;">
+                  <sc-for list="{{personalRows}}" as="row" hint-placeholder-count="6">
+                    <div style="display:flex;justify-content:space-between;padding:9px 0;font-size:13.5px;background:linear-gradient(to right,transparent,rgba(233,233,237,0.08) 0px,rgba(233,233,237,0.08) 100%,transparent) no-repeat bottom / 100% 1px;">
+                      <span>{{row.name}}</span><span style="font-weight:500;">{{row.total}}</span>
+                    </div>
+                  </sc-for>
+                  <div style="display:flex;justify-content:space-between;padding:10px 0 2px;font-size:13.5px;font-weight:500;color:#9184d9;">
+                    <span>Subtotal</span><span>{{personalTotal}}</span>
+                  </div>
+                </div>
+
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#75798c;">Room rent &amp; other</div>
+                  <sc-if value="{{showEditSharedBtn}}" hint-placeholder-val="{{false}}">
+                    <button onClick="{{startEditShared}}" style="font-size:11.5px;color:#9184d9;background:transparent;border:none;cursor:pointer;">Edit</button>
+                  </sc-if>
+                </div>
+
+                <sc-if value="{{editingShared}}" hint-placeholder-val="{{false}}">
+                <div style="background:#232532;border-radius:8px;padding:14px;margin-bottom:16px;display:flex;flex-direction:column;gap:10px;">
+                  <div>
+                    <label style="display:block;font-size:11.5px;margin-bottom:4px;color:#b2b6ca;">Room rent (₹)</label>
+                    <input style="width:100%;min-height:36px;padding:6px 10px;font-size:14px;color:#e9e9ed;background:#161826;border:1px solid rgba(233,233,237,0.16);border-radius:8px;box-sizing:border-box;" value="{{rentInput}}" onChange="{{onRentChange}}"></input>
+                  </div>
+                  <div>
+                    <label style="display:block;font-size:11.5px;margin-bottom:4px;color:#b2b6ca;">Other expenses (₹)</label>
+                    <input style="width:100%;min-height:36px;padding:6px 10px;font-size:14px;color:#e9e9ed;background:#161826;border:1px solid rgba(233,233,237,0.16);border-radius:8px;box-sizing:border-box;" value="{{otherInput}}" onChange="{{onOtherChange}}"></input>
+                  </div>
+                  <div style="display:flex;gap:8px;">
+                    <button onClick="{{cancelEditShared}}" style="flex:1;min-height:36px;border-radius:8px;border:1px solid rgba(233,233,237,0.16);background:transparent;color:#e9e9ed;font-size:13px;cursor:pointer;">Cancel</button>
+                    <button onClick="{{saveShared}}" style="flex:1;min-height:36px;border-radius:8px;border:1px solid #9184d9;background:transparent;color:#9184d9;font-size:13px;font-weight:500;cursor:pointer;">Save</button>
+                  </div>
+                </div>
+                </sc-if>
+
+                <sc-if value="{{!editingShared}}" hint-placeholder-val="{{true}}">
+                <div style="background:#232532;border-radius:8px;padding:6px 12px;margin-bottom:16px;">
+                  <div style="display:flex;justify-content:space-between;padding:9px 0;font-size:13.5px;background:linear-gradient(to right,transparent,rgba(233,233,237,0.08) 0px,rgba(233,233,237,0.08) 100%,transparent) no-repeat bottom / 100% 1px;">
+                    <span>Room rent</span><span style="font-weight:500;">{{sharedRent}}</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;padding:9px 0;font-size:13.5px;">
+                    <span>Other</span><span style="font-weight:500;">{{sharedOther}}</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;padding:10px 0 2px;font-size:13.5px;font-weight:500;color:#9184d9;">
+                    <span>Subtotal</span><span>{{sharedTotal}}</span>
+                  </div>
+                </div>
+                </sc-if>
+
+                <div style="background:#2b2741;border-radius:8px;padding:16px;margin-bottom:16px;display:flex;flex-direction:column;gap:8px;">
+                  <div style="display:flex;justify-content:space-between;font-size:14px;"><span>Grand total</span><span style="font-weight:500;">{{grandTotal}}</span></div>
+                  <div style="display:flex;justify-content:space-between;font-size:14px;"><span>Fair share / person</span><span style="font-weight:500;">{{fairShare}}</span></div>
+                </div>
+
+                <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#75798c;margin-bottom:8px;">Balances</div>
+                <div style="background:#232532;border-radius:8px;padding:6px 12px;margin-bottom:16px;">
+                  <sc-for list="{{balanceRows}}" as="row" hint-placeholder-count="6">
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;font-size:13.5px;background:linear-gradient(to right,transparent,rgba(233,233,237,0.08) 0px,rgba(233,233,237,0.08) 100%,transparent) no-repeat bottom / 100% 1px;">
+                      <span>{{row.name}}</span><span style="font-weight:500;color:{{row.color}};">{{row.text}}</span>
+                    </div>
+                  </sc-for>
+                </div>
+
+                <sc-if value="{{hasSettlements}}" hint-placeholder-val="{{false}}">
+                <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#75798c;margin-bottom:8px;">Suggested settle-ups</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <sc-for list="{{settlementRows}}" as="s" hint-placeholder-count="2">
+                    <div style="background:#232532;border-radius:8px;padding:11px 14px;font-size:13px;">
+                      <span style="font-weight:500;">{{s.from}}</span> pays <span style="font-weight:500;">{{s.to}}</span> <span style="color:#9184d9;font-weight:500;">{{s.amount}}</span>
+                    </div>
+                  </sc-for>
+                </div>
+                </sc-if>
+              </div>
+              </sc-if>
+
+              <sc-if value="{{isHistory}}" hint-placeholder-val="{{false}}">
+              <div style="padding:18px;">
+                <select value="{{historyMonth}}" onChange="{{onHistoryMonthChange}}" style="width:100%;min-height:38px;padding:6px 10px;font-size:13px;color:#e9e9ed;background:#232532;border:1px solid rgba(233,233,237,0.16);border-radius:8px;margin-bottom:16px;">
+                  <sc-for list="{{historyMonthOptions}}" as="opt" hint-placeholder-count="2">
+                    <option value="{{opt.key}}">{{opt.label}}</option>
+                  </sc-for>
+                </select>
+
+                <sc-if value="{{historyEmpty}}" hint-placeholder-val="{{false}}">
+                  <div style="font-size:13px;color:#75798c;padding:20px 4px;text-align:center;">No past months yet — the current month archives automatically on the 1st.</div>
+                </sc-if>
+
+                <sc-if value="{{!historyEmpty}}" hint-placeholder-val="{{false}}">
+                <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#75798c;margin-bottom:8px;">Personal expenses</div>
+                <div style="background:#232532;border-radius:8px;padding:6px 12px;margin-bottom:16px;">
+                  <sc-for list="{{historyPersonalRows}}" as="row" hint-placeholder-count="6">
+                    <div style="display:flex;justify-content:space-between;padding:9px 0;font-size:13.5px;background:linear-gradient(to right,transparent,rgba(233,233,237,0.08) 0px,rgba(233,233,237,0.08) 100%,transparent) no-repeat bottom / 100% 1px;">
+                      <span>{{row.name}}</span><span style="font-weight:500;">{{row.total}}</span>
+                    </div>
+                  </sc-for>
+                  <div style="display:flex;justify-content:space-between;padding:10px 0 2px;font-size:13.5px;font-weight:500;color:#9184d9;">
+                    <span>Subtotal</span><span>{{historyPersonalTotal}}</span>
+                  </div>
+                </div>
+
+                <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#75798c;margin-bottom:8px;">Room rent &amp; other</div>
+                <div style="background:#232532;border-radius:8px;padding:6px 12px;margin-bottom:16px;">
+                  <div style="display:flex;justify-content:space-between;padding:9px 0;font-size:13.5px;background:linear-gradient(to right,transparent,rgba(233,233,237,0.08) 0px,rgba(233,233,237,0.08) 100%,transparent) no-repeat bottom / 100% 1px;">
+                    <span>Room rent</span><span style="font-weight:500;">{{historyRent}}</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;padding:9px 0;font-size:13.5px;">
+                    <span>Other</span><span style="font-weight:500;">{{historyOther}}</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;padding:10px 0 2px;font-size:13.5px;font-weight:500;color:#9184d9;">
+                    <span>Subtotal</span><span>{{historySharedTotal}}</span>
+                  </div>
+                </div>
+
+                <div style="background:#2b2741;border-radius:8px;padding:16px;margin-bottom:16px;display:flex;flex-direction:column;gap:8px;">
+                  <div style="display:flex;justify-content:space-between;font-size:14px;"><span>Grand total</span><span style="font-weight:500;">{{historyGrandTotal}}</span></div>
+                  <div style="display:flex;justify-content:space-between;font-size:14px;"><span>Fair share / person</span><span style="font-weight:500;">{{historyFairShare}}</span></div>
+                </div>
+
+                <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#75798c;margin-bottom:8px;">Balances</div>
+                <div style="background:#232532;border-radius:8px;padding:6px 12px;margin-bottom:16px;">
+                  <sc-for list="{{historyBalanceRows}}" as="row" hint-placeholder-count="6">
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;font-size:13.5px;background:linear-gradient(to right,transparent,rgba(233,233,237,0.08) 0px,rgba(233,233,237,0.08) 100%,transparent) no-repeat bottom / 100% 1px;">
+                      <span>{{row.name}}</span><span style="font-weight:500;color:{{row.color}};">{{row.text}}</span>
+                    </div>
+                  </sc-for>
+                </div>
+
+                <sc-if value="{{historyHasSettlements}}" hint-placeholder-val="{{false}}">
+                <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#75798c;margin-bottom:8px;">Settle-ups</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <sc-for list="{{historySettlementRows}}" as="s" hint-placeholder-count="2">
+                    <div style="background:#232532;border-radius:8px;padding:11px 14px;font-size:13px;">
+                      <span style="font-weight:500;">{{s.from}}</span> pays <span style="font-weight:500;">{{s.to}}</span> <span style="color:#9184d9;font-weight:500;">{{s.amount}}</span>
+                    </div>
+                  </sc-for>
+                </div>
+                </sc-if>
+                </sc-if>
+              </div>
+              </sc-if>
+
+            </div>
+
+            <div style="display:flex;border-top:1px solid rgba(233,233,237,0.08);padding:6px 8px;">
+              <button onClick="{{goDashboard}}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0;background:transparent;border:none;cursor:pointer;color:{{tabColorDashboard}};">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"></path><path d="M5 10v10h14V10"></path></svg>
+                <span style="font-size:10px;">Dashboard</span>
+              </button>
+              <button onClick="{{goMyExpenses}}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0;background:transparent;border:none;cursor:pointer;color:{{tabColorMyExpenses}};">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="12" rx="2"></rect><path d="M16 13h3"></path></svg>
+                <span style="font-size:10px;">My Expenses</span>
+              </button>
+              <button onClick="{{goSummary}}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0;background:transparent;border:none;cursor:pointer;color:{{tabColorSummary}};">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"></path><path d="M12 20V4"></path><path d="M20 20v-7"></path></svg>
+                <span style="font-size:10px;">Summary</span>
+              </button>
+              <button onClick="{{goHistory}}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0;background:transparent;border:none;cursor:pointer;color:{{tabColorHistory}};">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>
+                <span style="font-size:10px;">History</span>
+              </button>
+            </div>
+            </sc-if>
+
+          </div>
+          </sc-if>
+
+        </div>
+      </x-import>
+
+      <sc-if value="{{showDevPanel}}" hint-placeholder-val="{{false}}">
+      <div style="position:absolute;inset:0;border-radius:18px;overflow:hidden;display:grid;place-items:center;padding:24px;background:rgba(41,43,49,0.6);animation:ss-fade 0.15s ease;box-sizing:border-box;">
+        <div style="width:100%;max-width:320px;max-height:80%;overflow:auto;background:#232532;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:0 16px 40px rgba(0,0,0,0.65);animation:ss-pop 0.18s ease;">
+          <div style="font-weight:500;font-size:18px;">Developer tools</div>
+
+          <sc-if value="{{!devUnlocked}}" hint-placeholder-val="{{true}}">
+            <div style="font-size:12.5px;color:#b2b6ca;">Removing a roommate's account is a developer-only action. Enter the developer password to continue.</div>
+            <input type="password" placeholder="Developer password" style="width:100%;min-height:36px;padding:6px 10px;font-size:14px;color:#e9e9ed;background:#161826;border:1px solid rgba(233,233,237,0.16);border-radius:8px;box-sizing:border-box;" value="{{devPassword}}" onChange="{{onDevPasswordChange}}"></input>
+            <sc-if value="{{devError}}" hint-placeholder-val="{{false}}">
+              <div style="font-size:12px;color:#d2cefd;">{{devError}}</div>
+            </sc-if>
+            <div style="display:flex;gap:8px;margin-top:4px;">
+              <button onClick="{{closeDevPanel}}" style="flex:1;min-height:38px;border-radius:8px;border:1px solid rgba(233,233,237,0.16);background:transparent;color:#e9e9ed;font-size:13.5px;cursor:pointer;">Cancel</button>
+              <button onClick="{{submitDevPassword}}" style="flex:1;min-height:38px;border-radius:8px;border:1px solid #9184d9;background:transparent;color:#9184d9;font-size:13.5px;font-weight:500;cursor:pointer;">Unlock</button>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{devUnlocked}}" hint-placeholder-val="{{false}}">
+            <div style="font-size:12px;color:#b2b6ca;margin-bottom:2px;">Remove a roommate who has left. Their past expense entries are deleted too.</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <sc-for list="{{devMembers}}" as="dm" hint-placeholder-count="6">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#161826;border-radius:8px;">
+                  <div style="font-size:13.5px;">{{dm.name}}<sc-if value="{{dm.isAdmin}}" hint-placeholder-val="{{false}}"> · Admin</sc-if></div>
+                  <button onClick="{{dm.remove}}" style="font-size:12px;color:#e9e9ed;background:transparent;border:1px solid rgba(233,233,237,0.16);border-radius:6px;padding:5px 10px;cursor:pointer;">Remove</button>
+                </div>
+              </sc-for>
+            </div>
+            <button onClick="{{closeDevPanel}}" style="margin-top:6px;width:100%;min-height:36px;border-radius:8px;border:1px solid rgba(233,233,237,0.16);background:transparent;color:#e9e9ed;font-size:13px;cursor:pointer;">Done</button>
+          </sc-if>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{showModal}}" hint-placeholder-val="{{false}}">
+      <div style="position:absolute;inset:0;border-radius:18px;overflow:hidden;display:grid;place-items:center;padding:24px;background:rgba(41,43,49,0.6);animation:ss-fade 0.15s ease;box-sizing:border-box;">
+        <div style="width:100%;max-width:320px;background:#232532;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:0 16px 40px rgba(0,0,0,0.65);animation:ss-pop 0.18s ease;">
+          <div style="font-weight:500;font-size:18px;">{{modalTitle}}</div>
+          <div>
+            <label style="display:block;font-size:12px;margin-bottom:5px;color:#b2b6ca;">Item</label>
+            <input style="width:100%;min-height:36px;padding:6px 10px;font-size:14px;color:#e9e9ed;background:#161826;border:1px solid rgba(233,233,237,0.16);border-radius:8px;box-sizing:border-box;" placeholder="e.g. Groceries" value="{{formItem}}" onChange="{{onItemChange}}"></input>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <div style="flex:1;">
+              <label style="display:block;font-size:12px;margin-bottom:5px;color:#b2b6ca;">Price (₹)</label>
+              <input style="width:100%;min-height:36px;padding:6px 10px;font-size:14px;color:#e9e9ed;background:#161826;border:1px solid rgba(233,233,237,0.16);border-radius:8px;box-sizing:border-box;" placeholder="0" value="{{formPrice}}" onChange="{{onPriceChange}}"></input>
+            </div>
+            <div style="flex:1;">
+              <label style="display:block;font-size:12px;margin-bottom:5px;color:#b2b6ca;">Date</label>
+              <input type="date" style="width:100%;min-height:36px;padding:6px 10px;font-size:14px;color:#e9e9ed;background:#161826;border:1px solid rgba(233,233,237,0.16);border-radius:8px;box-sizing:border-box;" value="{{formDate}}" onChange="{{onDateChange}}"></input>
+            </div>
+          </div>
+          <sc-if value="{{formError}}" hint-placeholder-val="{{false}}">
+            <div style="font-size:12px;color:#d2cefd;">{{formError}}</div>
+          </sc-if>
+          <div style="display:flex;gap:8px;margin-top:4px;">
+            <button onClick="{{closeModal}}" style="flex:1;min-height:38px;border-radius:8px;border:1px solid rgba(233,233,237,0.16);background:transparent;color:#e9e9ed;font-size:13.5px;cursor:pointer;">Cancel</button>
+            <button onClick="{{saveExpense}}" style="flex:1;min-height:38px;border-radius:8px;border:1px solid #9184d9;background:transparent;color:#9184d9;font-size:13.5px;font-weight:500;cursor:pointer;">Save</button>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+    </div>
+
+    <div style="color:#75798c;font-size:11.5px;max-width:412px;text-align:center;line-height:1.5;">
+      Prototype: accounts and expenses are saved to this browser. Connecting a shared cloud database and real authentication is a follow-up build step.
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;monthCloseDay&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1,&quot;min&quot;:1,&quot;max&quot;:28,&quot;step&quot;:1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;showSettlements&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;}}">
+class Component extends DCLogic {
+  state = {
+    session: null,
+    loginUsername: '',
+    loginPassword: '',
+    loginError: '',
+    authMode: 'signin',
+    signupMemberId: null,
+    signupIsNew: false,
+    signupNewName: '',
+    signupUsername: '',
+    signupPassword: '',
+    signupPassword2: '',
+    signupError: '',
+    historyMonth: null,
+    showDevPanel: false,
+    devPassword: '',
+    devUnlocked: false,
+    devError: '',
+    activeTab: 'dashboard',
+    viewingMemberId: null,
+    browseMonth: null,
+    showModal: false,
+    editingId: null,
+    formItem: '',
+    formPrice: '',
+    formDate: '',
+    formError: '',
+    editingShared: false,
+    rentInput: '',
+    otherInput: '',
+    data: null,
+  };
+
+  componentDidMount() {
+    let data = null;
+    try { data = JSON.parse(localStorage.getItem('sixsplit-data-v3') || 'null'); } catch (e) {}
+    if (!data) data = this.seedData();
+    data.members = data.members.map(m => ({ ...m, claimed: m.claimed ?? !!m.username, role: m.id === 'bhanu' ? 'admin' : m.role }));
+    const realKey = this.realMonthKey();
+    if (data.currentMonthKey !== realKey) {
+      if (!data.closedMonths.includes(data.currentMonthKey)) data.closedMonths = [data.currentMonthKey, ...data.closedMonths];
+      data.currentMonthKey = realKey;
+      if (!data.expensesByMonth[realKey]) data.expensesByMonth[realKey] = [];
+      if (!data.sharedByMonth[realKey]) data.sharedByMonth[realKey] = { rent: 0, other: 0, updatedBy: null, updatedAt: null };
+    }
+    this.pruneToSixMonths(data);
+    let session = null;
+    try { session = localStorage.getItem('sixsplit-session-v3') || null; } catch (e) {}
+    if (session && !data.members.some(m => m.id === session)) session = null;
+    this.setState({ data, session, browseMonth: data.currentMonthKey }, () => this.persist());
+
+    this._onStorage = (e) => {
+      if (e.key === 'sixsplit-data-v3' && e.newValue) {
+        try { this.setState({ data: JSON.parse(e.newValue) }); } catch (err) {}
+      }
+      if (e.key === 'sixsplit-session-v3') {
+        this.setState({ session: e.newValue || null });
+      }
+    };
+    window.addEventListener('storage', this._onStorage);
+    this._onFocus = () => {
+      try {
+        const fresh = JSON.parse(localStorage.getItem('sixsplit-data-v3') || 'null');
+        if (fresh) this.setState({ data: fresh });
+      } catch (e) {}
+    };
+    window.addEventListener('focus', this._onFocus);
+    document.addEventListener('visibilitychange', this._onFocus);
+  }
+
+  componentWillUnmount() {
+    if (this._onStorage) window.removeEventListener('storage', this._onStorage);
+    if (this._onFocus) { window.removeEventListener('focus', this._onFocus); document.removeEventListener('visibilitychange', this._onFocus); }
+  }
+
+  realMonthKey() {
+    const closeDay = this.props.monthCloseDay ?? 1;
+    const d = new Date();
+    let y = d.getFullYear(), m = d.getMonth() + 1;
+    if (d.getDate() < closeDay) { m -= 1; if (m === 0) { m = 12; y -= 1; } }
+    return y + '-' + String(m).padStart(2, '0');
+  }
+
+  pruneToSixMonths(data) {
+    data.closedMonths = [...data.closedMonths].sort((a, b) => b.localeCompare(a)).slice(0, 5);
+    const keep = new Set([data.currentMonthKey, ...data.closedMonths]);
+    Object.keys(data.expensesByMonth).forEach(k => { if (!keep.has(k)) delete data.expensesByMonth[k]; });
+    Object.keys(data.sharedByMonth).forEach(k => { if (!keep.has(k)) delete data.sharedByMonth[k]; });
+  }
+
+  seedData() {
+    const key = this.realMonthKey();
+    return {
+      currentMonthKey: key,
+      closedMonths: [],
+      members: [
+        { id: 'manohar', name: 'Manohar', username: null, password: null, claimed: false, role: 'admin' },
+        { id: 'rajavardhan', name: 'Rajavardhan', username: null, password: null, claimed: false, role: 'member' },
+        { id: 'bhanu', name: 'Bhanu', username: null, password: null, claimed: false, role: 'admin' },
+        { id: 'ajay', name: 'Ajay', username: null, password: null, claimed: false, role: 'member' },
+        { id: 'meera', name: 'Meera', username: null, password: null, claimed: false, role: 'member' },
+        { id: 'gopi', name: 'Gopi', username: null, password: null, claimed: false, role: 'member' },
+      ],
+      expensesByMonth: { [key]: [] },
+      sharedByMonth: { [key]: { rent: 0, other: 0, updatedBy: null, updatedAt: null } },
+    };
+  }
+
+  persist() { try { localStorage.setItem('sixsplit-data-v3', JSON.stringify(this.state.data)); } catch (e) {} }
+
+  login() {
+    const { data, loginUsername, loginPassword } = this.state;
+    const u = loginUsername.trim().toLowerCase();
+    const m = data.members.find(x => x.username === u);
+    if (!m || m.password !== loginPassword) { this.setState({ loginError: 'Invalid username or password.' }); return; }
+    try { localStorage.setItem('sixsplit-session-v3', m.id); } catch (e) {}
+    this.setState({ session: m.id, loginError: '', loginUsername: '', loginPassword: '' });
+  }
+
+  goSignin() { this.setState({ authMode: 'signin', signupError: '' }); }
+  goSignup() { this.setState({ authMode: 'signup', signupMemberId: null, signupIsNew: false, signupUsername: '', signupPassword: '', signupPassword2: '', signupError: '' }); }
+  pickSignupMember(id) { this.setState({ signupMemberId: id, signupUsername: '', signupPassword: '', signupPassword2: '', signupError: '' }); }
+  clearSignupMember() { this.setState({ signupMemberId: null }); }
+  goNewMember() { this.setState({ signupIsNew: true, signupNewName: '', signupUsername: '', signupPassword: '', signupPassword2: '', signupError: '' }); }
+  backToClaimList() { this.setState({ signupIsNew: false }); }
+
+  createNewMember() {
+    const { data, signupNewName, signupUsername, signupPassword, signupPassword2 } = this.state;
+    const name = signupNewName.trim();
+    const uname = signupUsername.trim().toLowerCase();
+    if (!name) { this.setState({ signupError: 'Enter your name.' }); return; }
+    if (!uname) { this.setState({ signupError: 'Choose a username.' }); return; }
+    if (signupPassword.length < 4) { this.setState({ signupError: 'Password must be at least 4 characters.' }); return; }
+    if (signupPassword !== signupPassword2) { this.setState({ signupError: 'Passwords do not match.' }); return; }
+    if (data.members.some(m => m.username === uname)) { this.setState({ signupError: 'That username is taken.' }); return; }
+    const id = 'm' + Date.now();
+    const newMember = { id, name, username: uname, password: signupPassword, claimed: true, role: 'member' };
+    const newData = { ...data, members: [...data.members, newMember] };
+    try { localStorage.setItem('sixsplit-session-v3', id); } catch (e) {}
+    this.setState({ data: newData, session: id, authMode: 'signin', signupIsNew: false, signupNewName: '', signupUsername: '', signupPassword: '', signupPassword2: '', signupError: '' }, () => this.persist());
+  }
+
+  openDevPanel() { this.setState({ showDevPanel: true, devUnlocked: false, devPassword: '', devError: '' }); }
+  closeDevPanel() { this.setState({ showDevPanel: false }); }
+  submitDevPassword() {
+    if (this.state.devPassword === 'sixsplit-dev') this.setState({ devUnlocked: true, devError: '' });
+    else this.setState({ devError: 'Incorrect developer password.' });
+  }
+  removeMember(id) {
+    if (id === this.state.session) return;
+    const { data } = this.state;
+    const members = data.members.filter(m => m.id !== id);
+    const expensesByMonth = {};
+    Object.keys(data.expensesByMonth).forEach(k => { expensesByMonth[k] = data.expensesByMonth[k].filter(e => e.memberId !== id); });
+    const newData = { ...data, members, expensesByMonth };
+    this.setState({ data: newData }, () => this.persist());
+  }
+
+  createAccount() {
+    const { data, signupMemberId, signupUsername, signupPassword, signupPassword2 } = this.state;
+    const uname = signupUsername.trim().toLowerCase();
+    if (!uname) { this.setState({ signupError: 'Choose a username.' }); return; }
+    if (signupPassword.length < 4) { this.setState({ signupError: 'Password must be at least 4 characters.' }); return; }
+    if (signupPassword !== signupPassword2) { this.setState({ signupError: 'Passwords do not match.' }); return; }
+    if (data.members.some(m => m.username === uname)) { this.setState({ signupError: 'That username is taken.' }); return; }
+    const members = data.members.map(m => m.id === signupMemberId ? { ...m, username: uname, password: signupPassword, claimed: true } : m);
+    const newData = { ...data, members };
+    try { localStorage.setItem('sixsplit-session-v3', signupMemberId); } catch (e) {}
+    this.setState({ data: newData, session: signupMemberId, authMode: 'signin', signupMemberId: null, signupUsername: '', signupPassword: '', signupPassword2: '', signupError: '' }, () => this.persist());
+  }
+
+  logout() { try { localStorage.removeItem('sixsplit-session-v3'); } catch (e) {} this.setState({ session: null, activeTab: 'dashboard', viewingMemberId: null }); }
+  selectTab(tab) { this.setState({ activeTab: tab, viewingMemberId: null }); }
+  viewMember(id) { this.setState({ viewingMemberId: id, browseMonth: this.state.data.currentMonthKey }); }
+  backFromMember() { this.setState({ viewingMemberId: null }); }
+  selectMonth(key) { this.setState({ browseMonth: key }); }
+
+  openAdd() {
+    const d = new Date();
+    this.setState({ showModal: true, editingId: null, formItem: '', formPrice: '', formError: '', formDate: this.state.data.currentMonthKey + '-' + String(d.getDate()).padStart(2, '0') });
+  }
+  openEdit(exp) { this.setState({ showModal: true, editingId: exp.id, formItem: exp.item, formPrice: String(exp.price), formDate: exp.date, formError: '' }); }
+  closeModal() { this.setState({ showModal: false }); }
+
+  saveExpense() {
+    const { data, formItem, formPrice, formDate, editingId, session } = this.state;
+    const price = parseFloat(formPrice);
+    if (!formItem.trim() || !price || price <= 0 || !formDate) { this.setState({ formError: 'Enter an item, a price and a date.' }); return; }
+    const monthKey = data.currentMonthKey;
+    const list = data.expensesByMonth[monthKey] ? [...data.expensesByMonth[monthKey]] : [];
+    if (editingId) {
+      const idx = list.findIndex(e => e.id === editingId);
+      if (idx > -1) list[idx] = { ...list[idx], item: formItem.trim(), price, date: formDate };
+    } else {
+      list.push({ id: 'e' + Date.now(), memberId: session, item: formItem.trim(), price, date: formDate });
+    }
+    const newData = { ...data, expensesByMonth: { ...data.expensesByMonth, [monthKey]: list } };
+    this.setState({ data: newData, showModal: false }, () => this.persist());
+  }
+
+  deleteExpense(id) {
+    const { data } = this.state;
+    const monthKey = data.currentMonthKey;
+    const list = (data.expensesByMonth[monthKey] || []).filter(e => e.id !== id);
+    const newData = { ...data, expensesByMonth: { ...data.expensesByMonth, [monthKey]: list } };
+    this.setState({ data: newData }, () => this.persist());
+  }
+
+  startEditShared() {
+    const s = this.getShared(this.state.data.currentMonthKey);
+    this.setState({ editingShared: true, rentInput: String(s.rent || ''), otherInput: String(s.other || '') });
+  }
+  cancelEditShared() { this.setState({ editingShared: false }); }
+  saveShared() {
+    const { data, rentInput, otherInput, session } = this.state;
+    const rent = parseFloat(rentInput) || 0, other = parseFloat(otherInput) || 0;
+    const monthKey = data.currentMonthKey;
+    const newData = { ...data, sharedByMonth: { ...data.sharedByMonth, [monthKey]: { rent, other, updatedBy: session, updatedAt: new Date().toISOString().slice(0, 10) } } };
+    this.setState({ data: newData, editingShared: false }, () => this.persist());
+  }
+
+  getExpenses(monthKey) { return (this.state.data.expensesByMonth[monthKey]) || []; }
+  getShared(monthKey) { return (this.state.data.sharedByMonth[monthKey]) || { rent: 0, other: 0 }; }
+  memberTotal(monthKey, memberId) { return this.getExpenses(monthKey).filter(e => e.memberId === memberId).reduce((s, e) => s + e.price, 0); }
+  personalGrand(monthKey) { return this.getExpenses(monthKey).reduce((s, e) => s + e.price, 0); }
+  fmt(n) { return '\u20b9' + Math.round(n).toLocaleString('en-IN'); }
+  monthLabel(key) {
+    if (!key) return '';
+    const [y, m] = key.split('-');
+    const names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    return names[parseInt(m, 10) - 1] + ' ' + y;
+  }
+  formatShortDate(iso) {
+    const d = new Date(iso + 'T00:00:00');
+    const names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return names[d.getMonth()] + ' ' + d.getDate();
+  }
+  closesOnLabel() {
+    const closeDay = this.props.monthCloseDay ?? 1;
+    const d = new Date();
+    let y = d.getFullYear(), m = d.getMonth();
+    if (d.getDate() >= closeDay) { m += 1; if (m === 12) { m = 0; y += 1; } }
+    const names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return names[m] + ' ' + closeDay + ', ' + y;
+  }
+
+  computeSettlements(balances) {
+    const creditors = balances.filter(b => b.balance > 1).map(b => ({ ...b })).sort((a, b) => b.balance - a.balance);
+    const debtors = balances.filter(b => b.balance < -1).map(b => ({ ...b, balance: -b.balance })).sort((a, b) => b.balance - a.balance);
+    const txns = []; let i = 0, j = 0, guard = 0;
+    while (i < creditors.length && j < debtors.length && guard < 50) {
+      guard++;
+      const amt = Math.min(creditors[i].balance, debtors[j].balance);
+      txns.push({ from: debtors[j].name, to: creditors[i].name, amount: this.fmt(amt) });
+      creditors[i].balance -= amt; debtors[j].balance -= amt;
+      if (creditors[i].balance < 1) i++;
+      if (debtors[j].balance < 1) j++;
+    }
+    return txns;
+  }
+
+  renderVals() {
+    const { data } = this.state;
+    if (!data) return { loggedIn: false, loginMembers: [] };
+
+    if (!this.state.session) {
+      const isSignin = this.state.authMode === 'signin';
+      const unclaimed = data.members.filter(m => !m.claimed);
+      const signupMember = this.state.signupMemberId ? data.members.find(m => m.id === this.state.signupMemberId) : null;
+      return {
+        loggedIn: false,
+        loginUsername: this.state.loginUsername,
+        loginPassword: this.state.loginPassword,
+        loginError: this.state.loginError,
+        onUsernameChange: (e) => this.setState({ loginUsername: e.target.value }),
+        onPasswordChange: (e) => this.setState({ loginPassword: e.target.value }),
+        onLoginSubmit: (e) => { e.preventDefault(); this.login(); },
+
+        isSignin,
+        isSignup: !isSignin,
+        goSignin: () => this.goSignin(),
+        goSignup: () => this.goSignup(),
+        signinTabColor: isSignin ? '#9184d9' : '#e9e9ed',
+        signinTabShadow: isSignin ? 'inset 0 -2px 0 #9184d9' : 'none',
+        signupTabColor: !isSignin ? '#9184d9' : '#e9e9ed',
+        signupTabShadow: !isSignin ? 'inset 0 -2px 0 #9184d9' : 'none',
+
+        unclaimedMembers: unclaimed.map(m => ({ id: m.id, name: m.name, pick: () => this.pickSignupMember(m.id) })),
+        allClaimed: unclaimed.length === 0,
+        signupMemberId: this.state.signupMemberId,
+        signupMemberName: signupMember ? signupMember.name : '',
+        clearSignupMember: () => this.clearSignupMember(),
+        signupUsername: this.state.signupUsername,
+        signupPassword: this.state.signupPassword,
+        signupPassword2: this.state.signupPassword2,
+        signupError: this.state.signupError,
+        onSignupUsernameChange: (e) => this.setState({ signupUsername: e.target.value }),
+        onSignupPasswordChange: (e) => this.setState({ signupPassword: e.target.value }),
+        onSignupPassword2Change: (e) => this.setState({ signupPassword2: e.target.value }),
+        onSignupSubmit: (e) => { e.preventDefault(); this.createAccount(); },
+
+        signupIsNew: this.state.signupIsNew,
+        signupNewName: this.state.signupNewName,
+        goNewMember: () => this.goNewMember(),
+        backToClaimList: () => this.backToClaimList(),
+        onNewNameChange: (e) => this.setState({ signupNewName: e.target.value }),
+        onNewMemberSubmit: (e) => { e.preventDefault(); this.createNewMember(); },
+      };
+    }
+
+    const currentUser = data.members.find(m => m.id === this.state.session);
+    if (!currentUser) { return { loggedIn: false, isSignin: true, unclaimedMembers: [], onLoginSubmit: (e) => e.preventDefault() }; }
+    const isAdmin = currentUser.role === 'admin';
+    const currentMonthKey = data.currentMonthKey;
+    const browseMonth = currentMonthKey;
+    const isCurrentBrowsed = true;
+    const historyMonth = (this.state.historyMonth && data.closedMonths.includes(this.state.historyMonth)) ? this.state.historyMonth : (data.closedMonths[0] || null);
+
+    // dashboard (always current month)
+    const memberCards = data.members.map(m => ({
+      id: m.id,
+      name: m.name,
+      initial: m.name[0],
+      total: this.fmt(this.memberTotal(currentMonthKey, m.id)),
+      open: () => (m.id === currentUser.id ? this.selectTab('myexpenses') : this.viewMember(m.id)),
+    }));
+    const sharedNow = this.getShared(currentMonthKey);
+    const dashGrandRaw = this.personalGrand(currentMonthKey) + sharedNow.rent + sharedNow.other;
+    const dashShareRaw = dashGrandRaw / 6;
+    const yourBalanceRaw = this.memberTotal(currentMonthKey, currentUser.id) - dashShareRaw;
+    const dashboardBalancePositive = yourBalanceRaw >= 0;
+
+    // my expenses / member view (browseMonth)
+    const myExpensesList = this.getExpenses(browseMonth).filter(e => e.memberId === currentUser.id).sort((a, b) => b.date.localeCompare(a.date));
+    const myExpenseRows = myExpensesList.map(e => ({ id: e.id, item: e.item, date: this.formatShortDate(e.date), price: this.fmt(e.price), edit: () => this.openEdit(e), del: () => this.deleteExpense(e.id) }));
+
+    const viewingMemberObj = this.state.viewingMemberId ? data.members.find(m => m.id === this.state.viewingMemberId) : null;
+    let memberViewRows = [], memberViewTotal = this.fmt(0);
+    if (viewingMemberObj) {
+      const list = this.getExpenses(browseMonth).filter(e => e.memberId === viewingMemberObj.id).sort((a, b) => b.date.localeCompare(a.date));
+      memberViewRows = list.map(e => ({ id: e.id, item: e.item, date: this.formatShortDate(e.date), price: this.fmt(e.price) }));
+      memberViewTotal = this.fmt(list.reduce((s, e) => s + e.price, 0));
+    }
+
+    // summary (browseMonth)
+    const personalRows = data.members.map(m => ({ id: m.id, name: m.name, total: this.fmt(this.memberTotal(browseMonth, m.id)) }));
+    const personalTotalRaw = this.personalGrand(browseMonth);
+    const sharedBrowsed = this.getShared(browseMonth);
+    const sharedTotalRaw = sharedBrowsed.rent + sharedBrowsed.other;
+    const grandTotalRaw = personalTotalRaw + sharedTotalRaw;
+    const fairShareRaw = grandTotalRaw / 6;
+    const balances = data.members.map(m => ({ id: m.id, name: m.name, balance: this.memberTotal(browseMonth, m.id) - fairShareRaw }));
+    const balanceRows = balances.map(b => ({
+      name: b.name,
+      color: b.balance >= 0 ? '#d2cefd' : '#e9e9ed',
+      text: (b.balance >= 0 ? '+' : '-') + this.fmt(Math.abs(b.balance)) + (b.balance >= 0 ? ' back' : ' owed'),
+    }));
+    const settlementRows = this.computeSettlements(balances);
+
+    let historyPersonalRows = [], historyPersonalTotal = this.fmt(0), historyRent = this.fmt(0), historyOther = this.fmt(0),
+      historySharedTotal = this.fmt(0), historyGrandTotal = this.fmt(0), historyFairShare = this.fmt(0),
+      historyBalanceRows = [], historySettlementRows = [];
+    if (historyMonth) {
+      historyPersonalRows = data.members.map(m => ({ id: m.id, name: m.name, total: this.fmt(this.memberTotal(historyMonth, m.id)) }));
+      const hPersonalRaw = this.personalGrand(historyMonth);
+      const hShared = this.getShared(historyMonth);
+      const hSharedRaw = hShared.rent + hShared.other;
+      const hGrandRaw = hPersonalRaw + hSharedRaw;
+      const hFairRaw = hGrandRaw / 6;
+      const hBalances = data.members.map(m => ({ id: m.id, name: m.name, balance: this.memberTotal(historyMonth, m.id) - hFairRaw }));
+      historyPersonalTotal = this.fmt(hPersonalRaw);
+      historyRent = this.fmt(hShared.rent);
+      historyOther = this.fmt(hShared.other);
+      historySharedTotal = this.fmt(hSharedRaw);
+      historyGrandTotal = this.fmt(hGrandRaw);
+      historyFairShare = this.fmt(hFairRaw);
+      historyBalanceRows = hBalances.map(b => ({ name: b.name, color: b.balance >= 0 ? '#d2cefd' : '#e9e9ed', text: (b.balance >= 0 ? '+' : '-') + this.fmt(Math.abs(b.balance)) + (b.balance >= 0 ? ' back' : ' owed') }));
+      historySettlementRows = this.computeSettlements(hBalances);
+    }
+
+    return {
+      loggedIn: true,
+      currentUser,
+      isAdmin,
+      logout: () => this.logout(),
+      viewingMember: viewingMemberObj,
+      backFromMember: () => this.backFromMember(),
+
+      isDashboard: this.state.activeTab === 'dashboard',
+      isMyExpenses: this.state.activeTab === 'myexpenses',
+      isSummary: this.state.activeTab === 'summary',
+      isHistory: this.state.activeTab === 'history',
+      goDashboard: () => this.selectTab('dashboard'),
+      goMyExpenses: () => this.selectTab('myexpenses'),
+      goSummary: () => this.selectTab('summary'),
+      goHistory: () => this.setState({ activeTab: 'history', historyMonth: historyMonth }),
+      tabColorDashboard: this.state.activeTab === 'dashboard' ? '#9184d9' : '#75798c',
+      tabColorMyExpenses: this.state.activeTab === 'myexpenses' ? '#9184d9' : '#75798c',
+      tabColorSummary: this.state.activeTab === 'summary' ? '#9184d9' : '#75798c',
+      tabColorHistory: this.state.activeTab === 'history' ? '#9184d9' : '#75798c',
+
+      historyMonth,
+      historyMonthOptions: data.closedMonths.map(k => ({ key: k, label: this.monthLabel(k) })),
+      onHistoryMonthChange: (e) => this.setState({ historyMonth: e.target.value }),
+      historyEmpty: !historyMonth,
+      historyPersonalRows,
+      historyPersonalTotal,
+      historyRent,
+      historyOther,
+      historySharedTotal,
+      historyGrandTotal,
+      historyFairShare,
+      historyBalanceRows,
+      historyHasSettlements: historySettlementRows.length > 0,
+      historySettlementRows,
+
+      showDevPanel: this.state.showDevPanel,
+      devUnlocked: this.state.devUnlocked,
+      devPassword: this.state.devPassword,
+      devError: this.state.devError,
+      openDevPanel: () => this.openDevPanel(),
+      closeDevPanel: () => this.closeDevPanel(),
+      onDevPasswordChange: (e) => this.setState({ devPassword: e.target.value }),
+      submitDevPassword: () => this.submitDevPassword(),
+      devMembers: data.members.map(m => ({ id: m.id, name: m.name, isAdmin: m.role === 'admin', remove: () => this.removeMember(m.id) })),
+
+      currentMonthLabel: this.monthLabel(currentMonthKey),
+      closesOnLabel: this.closesOnLabel(),
+      memberCards,
+      dashboardGrand: this.fmt(dashGrandRaw),
+      dashboardShare: this.fmt(dashShareRaw),
+      dashboardBalanceText: (dashboardBalancePositive ? '+' : '-') + this.fmt(Math.abs(yourBalanceRaw)),
+      dashboardBalanceColor: dashboardBalancePositive ? '#d2cefd' : '#e9e9ed',
+
+      canEditMonth: isCurrentBrowsed,
+      myTotal: this.fmt(this.memberTotal(browseMonth, currentUser.id)),
+      myExpenseRows,
+      myExpensesEmpty: myExpenseRows.length === 0,
+      openAdd: () => this.openAdd(),
+
+      memberViewRows,
+      memberViewTotal,
+      memberViewEmpty: memberViewRows.length === 0,
+
+      personalRows,
+      personalTotal: this.fmt(personalTotalRaw),
+      sharedRent: this.fmt(sharedBrowsed.rent),
+      sharedOther: this.fmt(sharedBrowsed.other),
+      sharedTotal: this.fmt(sharedTotalRaw),
+      grandTotal: this.fmt(grandTotalRaw),
+      fairShare: this.fmt(fairShareRaw),
+      balanceRows,
+      hasSettlements: (this.props.showSettlements ?? true) && settlementRows.length > 0,
+      settlementRows,
+      showEditSharedBtn: isAdmin && isCurrentBrowsed && !this.state.editingShared,
+      editingShared: this.state.editingShared,
+      startEditShared: () => this.startEditShared(),
+      cancelEditShared: () => this.cancelEditShared(),
+      saveShared: () => this.saveShared(),
+      rentInput: this.state.rentInput,
+      otherInput: this.state.otherInput,
+      onRentChange: (e) => this.setState({ rentInput: e.target.value }),
+      onOtherChange: (e) => this.setState({ otherInput: e.target.value }),
+
+      showModal: this.state.showModal,
+      modalTitle: this.state.editingId ? 'Edit expense' : 'Add expense',
+      formItem: this.state.formItem,
+      formPrice: this.state.formPrice,
+      formDate: this.state.formDate,
+      formError: this.state.formError,
+      onItemChange: (e) => this.setState({ formItem: e.target.value }),
+      onPriceChange: (e) => this.setState({ formPrice: e.target.value }),
+      onDateChange: (e) => this.setState({ formDate: e.target.value }),
+      closeModal: () => this.closeModal(),
+      saveExpense: () => this.saveExpense(),
+    };
+  }
+}
+
+</script>
+</body>
+</html>
