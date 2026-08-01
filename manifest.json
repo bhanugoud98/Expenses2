@@ -1,0 +1,12 @@
+const firebaseConfig = {
+  apiKey: "AIzaSyAGGTJaga28IyceDRXTzJH-7GJ8yEnfaoQ",
+  authDomain: "expenses2-6b89e.firebaseapp.com",
+  projectId: "expenses2-6b89e",
+  storageBucket: "expenses2-6b89e.firebasestorage.app",
+  messagingSenderId: "533305179193",
+  appId: "1:533305179193:web:a5aaf776fe9bdca7fbe1e8"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+window.__sixsplitDb__ = firebase.firestore();
