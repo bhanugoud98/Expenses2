@@ -1,14 +1,15 @@
-{
-  "name": "SixSplit — Room Expense Tracker",
-  "short_name": "SixSplit",
-  "start_url": "./index.html",
-  "scope": "./",
-  "display": "standalone",
-  "background_color": "#161826",
-  "theme_color": "#161826",
-  "orientation": "portrait",
-  "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
-  ]
+// PASTE your Firebase project's config here (Firebase console → Project settings → your web app → SDK setup and configuration → "Config").
+// This is safe to be public — Firestore security rules control access, not this key.
+window.__FIREBASE_CONFIG__ = {
+  apiKey: "AIzaSyAGGTJaga28IyceDRXTzJH-7GJ8yEnfaoQ",
+  authDomain: "expenses2-6b89e.firebaseapp.com",
+  projectId: "expenses2-6b89e",
+  storageBucket: "expenses2-6b89e.firebasestorage.app",
+  messagingSenderId: "533305179193",
+  appId: "1:533305179193:web:a5aaf776fe9bdca7fbe1e8"
+};
+
+if (!window.__sixsplitFirebaseApp__ && window.firebase && window.__FIREBASE_CONFIG__.apiKey !== "YOUR_API_KEY") {
+  window.__sixsplitFirebaseApp__ = firebase.initializeApp(window.__FIREBASE_CONFIG__);
+  window.__sixsplitDb__ = firebase.firestore();
 }
