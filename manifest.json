@@ -1,6 +1,8 @@
-// PASTE your Firebase project's config here (Firebase console → Project settings → your web app → SDK setup and configuration → "Config").
-// This is safe to be public — Firestore security rules control access, not this key.
-window.__FIREBASE_CONFIG__ = {
+// Firebase SDK imports (v11+)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+const firebaseConfig = {
   apiKey: "AIzaSyAGGTJaga28IyceDRXTzJH-7GJ8yEnfaoQ",
   authDomain: "expenses2-6b89e.firebaseapp.com",
   projectId: "expenses2-6b89e",
@@ -9,7 +11,7 @@ window.__FIREBASE_CONFIG__ = {
   appId: "1:533305179193:web:a5aaf776fe9bdca7fbe1e8"
 };
 
-if (!window.__sixsplitFirebaseApp__ && window.firebase && window.__FIREBASE_CONFIG__.apiKey !== "YOUR_API_KEY") {
-  window.__sixsplitFirebaseApp__ = firebase.initializeApp(window.__FIREBASE_CONFIG__);
-  window.__sixsplitDb__ = firebase.firestore();
-}
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+export { app, db };
