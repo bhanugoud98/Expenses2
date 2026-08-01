@@ -7,6 +7,9 @@
 <meta name="theme-color" content="#161826">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script src="./support.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="./firebase-config.js"></script>
 <script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('service-worker.js').catch(() => {})); }</script>
 <template id="__bundler_thumbnail">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#161826"/><circle cx="100" cy="88" r="40" fill="none" stroke="#9184d9" stroke-width="6"/><text x="100" y="96" font-family="Inter,sans-serif" font-size="30" fill="#9184d9" text-anchor="middle">6</text><text x="100" y="160" font-family="Inter,sans-serif" font-size="22" fill="#e9e9ed" text-anchor="middle">SixSplit</text></svg>
@@ -551,7 +554,30 @@ class Component extends DCLogic {
     let session = null;
     try { session = localStorage.getItem('sixsplit-session-v3') || null; } catch (e) {}
     if (session && !data.members.some(m => m.id === session)) session = null;
-    this.setState({ data, session, browseMonth: data.currentMonthKey }, () => this.persist());
+    this.setState({ data, session, browseMonth: data.currentMonthKey });
+
+    this._remoteReady = false;
+    this._suppressNextWrite = false;
+    if (window.__sixsplitDb__) {
+      this._cloudDocRef = window.__sixsplitDb__.collection('sixsplit').doc('roomData');
+      this._unsubCloud = this._cloudDocRef.onSnapshot((snap) => {
+        if (snap.exists) {
+          const remote = snap.data().payload;
+          if (remote) {
+            this._suppressNextWrite = true;
+            this.setState({ data: remote });
+            try { localStorage.setItem('sixsplit-data-v3', JSON.stringify(remote)); } catch (e) {}
+          }
+          this._remoteReady = true;
+        } else {
+          // no cloud doc yet — seed it from local data
+          this._cloudDocRef.set({ payload: this.state.data });
+          this._remoteReady = true;
+        }
+      }, (err) => { console.error('SixSplit cloud sync error', err); });
+    } else {
+      this.persist();
+    }
 
     this._onStorage = (e) => {
       if (e.key === 'sixsplit-data-v3' && e.newValue) {
@@ -575,6 +601,7 @@ class Component extends DCLogic {
   componentWillUnmount() {
     if (this._onStorage) window.removeEventListener('storage', this._onStorage);
     if (this._onFocus) { window.removeEventListener('focus', this._onFocus); document.removeEventListener('visibilitychange', this._onFocus); }
+    if (this._unsubCloud) this._unsubCloud();
   }
 
   realMonthKey() {
@@ -610,7 +637,11 @@ class Component extends DCLogic {
     };
   }
 
-  persist() { try { localStorage.setItem('sixsplit-data-v3', JSON.stringify(this.state.data)); } catch (e) {} }
+  persist() {
+    try { localStorage.setItem('sixsplit-data-v3', JSON.stringify(this.state.data)); } catch (e) {}
+    if (this._suppressNextWrite) { this._suppressNextWrite = false; return; }
+    if (this._cloudDocRef) { this._cloudDocRef.set({ payload: this.state.data }).catch((err) => console.error('SixSplit cloud write failed', err)); }
+  }
 
   login() {
     const { data, loginUsername, loginPassword } = this.state;
